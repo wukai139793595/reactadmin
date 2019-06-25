@@ -36,10 +36,10 @@ class Category extends Component {
         this.setState({
           modalVisible: 0
         });
-        let result = await reqUpdateCategory(
-          this.state.category._id,
-          values.categoryName
-        );
+        let result = await reqUpdateCategory({
+          categoryId: this.state.category._id,
+          categoryName: values.categoryName
+        });
         this.form.resetFields();
         if (result && result.status === 0) {
           message.success("修改成功");
@@ -165,7 +165,7 @@ class Category extends Component {
       );
 
     return (
-      <Card title={title} extra={extra} style={{ marginTop: "20px" }}>
+      <Card title={title} extra={extra}>
         <Table
           loading={loading}
           bordered

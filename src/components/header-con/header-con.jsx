@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import { Modal } from "antd";
 import { withRouter } from "react-router-dom";
 import dateFns from "date-fns";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
 import LinkButton from "../../components/link-button/link-button.jsx";
-import memory from "../../utils/memory.js";
+// import memory from "../../utils/memory.js";
 import { receiveWeather } from "../../api/index.js";
 import menuList from "../../config/menuConfig";
-import { removeUserStore } from "../../utils/store.js";
+import { resetUser } from "../../redux/actions.jsx";
 import "./header-con.less";
 class HeaderCon extends Component {
   state = {
@@ -15,6 +17,10 @@ class HeaderCon extends Component {
     dayPictureUrl: "",
     intervalId: 0,
     currentTime: dateFns.format(Date.now(), "YYYY-MM-DD hh:mm:ss")
+  };
+  static propTypes = {
+    user: PropTypes.object.isRequired,
+    resetUser: PropTypes.func.isRequired
   };
   componentDidMount() {
     this.intervalId = setInterval(() => {
@@ -32,14 +38,14 @@ class HeaderCon extends Component {
     });
   }
   componentWillUnmount() {
-    clearInterval(this.state.intervalId);
+    clearInterval(this.intervalId);
   }
   logout = () => {
+    let self = this;
     Modal.confirm({
       content: "确认退出",
       onOk: () => {
-        removeUserStore();
-        this.props.history.replace("/login");
+        self.props.resetUser();
       }
     });
   };
@@ -59,7 +65,7 @@ class HeaderCon extends Component {
     return headerName;
   };
   render() {
-    let { username } = memory.user;
+    let { username } = this.props.user;
     let headerName = this.getHeaderName();
     let { currentTime, weather, dayPictureUrl } = this.state;
     return (
@@ -81,4 +87,7 @@ class HeaderCon extends Component {
   }
 }
 
-export default withRouter(HeaderCon);
+export default connect(
+  state => ({ user: state.user }),
+  { resetUser }
+)(withRouter(HeaderCon));

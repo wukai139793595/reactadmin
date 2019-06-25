@@ -1,16 +1,21 @@
 import React, { Component } from "react";
 import { Form, Icon, Input, Button, message } from "antd";
 import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
 import logo from "../../assets/images/logo.png";
 import "./login.less";
-import { login } from "../../api/index.js";
-import memory from "../../utils/memory.js";
-import { setUserStore } from "../../utils/store.js";
+import { asyncLogin } from "../../redux/actions.jsx";
 
 class Login extends Component {
   state = {};
+  static propTypes = {
+    user: PropTypes.object.isRequired,
+    asyncLogin: PropTypes.func.isRequired
+  };
   handleSubmit = event => {
+    let self = this;
     event.preventDefault();
     this.props.form.validateFields(async (err, values) => {
       if (err) {
@@ -18,14 +23,7 @@ class Login extends Component {
         message.info("验证失败");
       } else {
         let { username, password } = values;
-        let result = await login({ username, password });
-        if (result.status === 0) {
-          message.success("登录成功");
-          setUserStore(result.data);
-          this.props.history.replace("/");
-        } else {
-          message.error(result.msg);
-        }
+        this.props.asyncLogin(username, password, self);
       }
     });
   };
@@ -43,7 +41,7 @@ class Login extends Component {
     }
   };
   render() {
-    let user = memory.user;
+    let user = this.props.user;
     if (user && user._id) {
       return <Redirect to="/" />;
     }
@@ -107,4 +105,7 @@ class Login extends Component {
   }
 }
 
-export default Form.create("my-login")(Login);
+export default connect(
+  state => ({ user: state.user }),
+  { asyncLogin }
+)(Form.create()(Login));

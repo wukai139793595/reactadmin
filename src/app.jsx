@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import Admin from "./pages/admin/admin.jsx";
 import Login from "./pages/login/login.jsx";
-export default class App extends Component {
+class App extends Component {
   render() {
     return (
       <BrowserRouter>
@@ -15,3 +15,5 @@ export default class App extends Component {
     );
   }
 }
+
+export default App;
