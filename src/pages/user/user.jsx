@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Card, Table, Button, Modal, message } from "antd";
 
+import { dateFormat } from "../../utils/dateFormat.js";
+
 import {
   reqUserList,
   reqUpdateUser,
@@ -68,14 +70,14 @@ class User extends Component {
             role_id
           });
         } else if (visible === "updateUser") {
-          const { username, phone, email } = values;
+          const { username, phone, email, role_id } = values;
           console.log(this.state.userInfo._id, this.state.userInfo.role_id);
           result = await reqUpdateUser({
             _id: this.state.userInfo._id,
             username,
             phone,
             email,
-            role_id: this.state.userInfo.role_id
+            role_id: role_id
           });
         }
         console.log(result);
@@ -99,6 +101,7 @@ class User extends Component {
     this.initData();
   }
   render() {
+    let { userList, loading, visible, userInfo, roleList } = this.state;
     let title = (
       <Button type="primary" onClick={this.createUser}>
         创建用户
@@ -112,9 +115,22 @@ class User extends Component {
         title: "注册时间",
         key: "create_time",
         dataIndex: "create_time",
+        render: dateFormat,
         width: "16%"
       },
-      { title: "所属角色", key: "role_id", dataIndex: "role_id", width: "16%" },
+      {
+        title: "所属角色",
+        key: "role_id",
+        dataIndex: "role_id",
+        render: role_id => {
+          let role = roleList.find((item, index) => item._id === role_id);
+          console.log("render", userList, roleList);
+          if (role) {
+            return role.name;
+          }
+        },
+        width: "16%"
+      },
       {
         title: "操作",
         key: "action",
@@ -131,7 +147,7 @@ class User extends Component {
         width: "16%"
       }
     ];
-    let { userList, loading, visible, userInfo, roleList } = this.state;
+
     return (
       <Card title={title}>
         <Table

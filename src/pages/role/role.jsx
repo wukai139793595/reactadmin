@@ -4,6 +4,7 @@ import { Card, Button, Table, Modal, message } from "antd";
 import AddRole from "./add-role.jsx";
 import AuthRole from "./auth-role.jsx";
 import { reqRoleList, reqAddRole, reqUpdateRole } from "../../api/index.js";
+import { dateFormat } from "../../utils/dateFormat.js";
 
 class Role extends Component {
   constructor(props) {
@@ -113,11 +114,13 @@ class Role extends Component {
       },
       {
         title: "创建时间",
-        dataIndex: "create_time"
+        dataIndex: "create_time",
+        render: dateFormat
       },
       {
         title: "授权时间",
-        dataIndex: "auth_time"
+        dataIndex: "auth_time",
+        render: dateFormat
       },
       {
         title: "授权人",
